@@ -1,411 +1,395 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-  <meta http-equiv="Content-Style-Type" content="text/css">
-  <title></title>
-  <meta name="Generator" content="Cocoa HTML Writer">
-  <meta name="CocoaVersion" content="2575.2">
-  <style type="text/css">
-    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
-    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Candidate Pipeline</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;}
+  :root{
+    --bg:#F8F9FB;
+    --surface:#FFFFFF;
+    --border:#E4E7EC;
+    --border-hover:#C8CDD8;
+    --text-primary:#0F1117;
+    --text-secondary:#4B5262;
+    --text-tertiary:#8C93A3;
+    --red-bg:#FEF2F2;--red-text:#991B1B;--red-border:#FECACA;
+    --green-bg:#F0FDF4;--green-text:#166534;--green-border:#BBF7D0;
+    --amber-bg:#FFFBEB;--amber-text:#92400E;--amber-border:#FDE68A;
+    --blue-bg:#EFF6FF;--blue-text:#1D4ED8;--blue-border:#BFDBFE;
+    --radius-sm:8px;--radius-md:12px;--radius-lg:16px;
+    --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
+  }
+  body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh;padding:0;}
+
+  /* TOP NAV */
+  .nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+  .nav-logo{font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;}
+  .nav-logo-dot{width:8px;height:8px;border-radius:50%;background:#6366F1;}
+  .nav-right{display:flex;align-items:center;gap:12px;}
+  .api-badge{font-size:12px;padding:5px 12px;border-radius:99px;background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-border);font-weight:500;}
+  .connect-btn{font-size:13px;padding:7px 16px;border-radius:var(--radius-sm);background:#6366F1;color:#fff;border:none;cursor:pointer;font-weight:500;font-family:var(--font);}
+  .connect-btn:hover{background:#4F46E5;}
+
+  /* MAIN */
+  .main{padding:28px 32px;}
+
+  /* HEADER */
+  .page-header{margin-bottom:24px;}
+  .page-title{font-size:24px;font-weight:600;color:var(--text-primary);letter-spacing:-0.4px;}
+  .page-sub{font-size:14px;color:var(--text-tertiary);margin-top:4px;}
+
+  /* BANNER */
+  .banner{display:none;align-items:center;gap:10px;padding:12px 16px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-md);margin-bottom:20px;font-size:13px;font-weight:500;color:var(--amber-text);}
+  .banner svg{flex-shrink:0;}
+
+  /* STATS */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 20px;}
+  .stat-val{font-size:26px;font-weight:600;color:var(--text-primary);letter-spacing:-0.5px;line-height:1;}
+  .stat-label{font-size:12px;color:var(--text-tertiary);margin-top:6px;font-weight:500;}
+  .stat.urgent .stat-val{color:#B45309;}
+
+  /* BOARD */
+  .board{display:flex;gap:12px;align-items:flex-start;overflow-x:auto;padding-bottom:12px;}
+  .col{min-width:200px;flex:1;}
+  .col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 2px;}
+  .col-label-wrap{display:flex;align-items:center;gap:7px;}
+  .col-pip{width:9px;height:9px;border-radius:50%;}
+  .col-label{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-secondary);}
+  .col-count{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--surface);border:1px solid var(--border);color:var(--text-tertiary);font-weight:500;}
+
+  /* CARD */
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s;}
+  .card:hover{border-color:var(--border-hover);box-shadow:0 2px 8px rgba(0,0,0,0.06);}
+  .card:last-child{margin-bottom:0;}
+  .card-accent{height:3px;width:100%;}
+  .card-body{padding:14px 16px 12px;}
+  .av-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+  .av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;letter-spacing:0.5px;}
+  .cname{font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.25;}
+  .crole{font-size:12px;color:var(--text-secondary);margin-top:3px;line-height:1.4;}
+  .crole em{font-style:normal;color:var(--text-tertiary);}
+  .crole strong{font-weight:500;color:var(--text-secondary);}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px;}
+  .chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:5px 10px;border-radius:99px;}
+  .chip-int{background:var(--blue-bg);color:var(--blue-text);border:1px solid var(--blue-border);}
+  .chip-cv{background:#F8F9FB;color:var(--text-tertiary);border:1px solid var(--border);}
+  .chip-urgent{background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-border);}
+  .chip svg{width:11px;height:11px;}
+
+  /* CHECKS */
+  .checks{border-top:1px solid var(--border);}
+  .chk-block{padding:10px 16px;display:flex;align-items:flex-start;gap:10px;transition:background 0.2s;}
+  .chk-block.red{background:var(--red-bg);}
+  .chk-block.grn{background:var(--green-bg);}
+  .chk-block+.chk-block{border-top:1px solid var(--border);}
+  .chk-icon{width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;}
+  .chk-icon.red{background:var(--red-bg);border:1.5px solid #FCA5A5;}
+  .chk-icon.grn{background:var(--green-bg);border:1.5px solid #86EFAC;}
+  .chk-icon svg{width:10px;height:10px;}
+  .chk-content{flex:1;min-width:0;}
+  .chk-title{font-size:12px;font-weight:600;margin-bottom:2px;}
+  .chk-title.red{color:var(--red-text);}
+  .chk-title.grn{color:var(--green-text);}
+  .chk-desc{font-size:11px;color:var(--text-tertiary);line-height:1.4;}
+  .chk-desc.thru{text-decoration:line-through;opacity:0.6;}
+  .chk-cb{width:15px;height:15px;cursor:pointer;flex-shrink:0;margin-top:2px;accent-color:#166534;}
+  .chk-cb.red{accent-color:#991B1B;}
+  .hint{font-size:11px;font-weight:500;padding:6px 16px;background:var(--amber-bg);color:var(--amber-text);border-top:1px solid var(--amber-border);}
+
+  /* NOTES */
+  .notes-area{border-top:1px solid var(--border);padding:10px 16px 12px;}
+  .notes-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-tertiary);margin-bottom:6px;}
+  .notes-pre{font-size:13px;color:var(--text-secondary);line-height:1.6;cursor:pointer;min-height:18px;}
+  .notes-pre:empty::before{content:'Click to add a note...';color:var(--text-tertiary);font-style:italic;}
+  .notes-ta{width:100%;font-size:13px;color:var(--text-primary);border:1px solid var(--border-hover);border-radius:var(--radius-sm);padding:8px 10px;resize:none;min-height:72px;background:var(--surface);font-family:var(--font);line-height:1.6;outline:none;display:none;transition:border-color 0.15s;}
+  .notes-ta:focus{border-color:#6366F1;}
+  .save-note{font-size:12px;font-weight:500;margin-top:6px;padding:5px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text-secondary);cursor:pointer;display:none;font-family:var(--font);}
+  .save-note:hover{background:var(--surface);border-color:var(--border-hover);}
+
+  /* MODAL */
+  .modal-wrap{display:none;position:fixed;inset:0;background:rgba(15,17,23,0.4);z-index:200;align-items:center;justify-content:center;}
+  .modal-wrap.open{display:flex;}
+  .modal{background:var(--surface);border-radius:var(--radius-lg);padding:28px;width:420px;max-width:90vw;border:1px solid var(--border);}
+  .modal h3{font-size:17px;font-weight:600;margin-bottom:8px;}
+  .modal p{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;}
+  .modal input{width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px;font-family:var(--font);outline:none;color:var(--text-primary);background:var(--bg);}
+  .modal input:focus{border-color:#6366F1;}
+  .modal input::placeholder{color:var(--text-tertiary);}
+  .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
+  .btn-cancel{font-size:13px;padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;cursor:pointer;font-family:var(--font);color:var(--text-secondary);}
+  .btn-save{font-size:13px;padding:8px 18px;border:none;border-radius:var(--radius-sm);background:#6366F1;color:#fff;cursor:pointer;font-weight:500;font-family:var(--font);}
+  .btn-save:hover{background:#4F46E5;}
+
+  @media(max-width:700px){
+    .main{padding:16px;}
+    .stats{grid-template-columns:repeat(2,1fr);}
+    .nav{padding:0 16px;}
+  }
+</style>
 </head>
 <body>
-<p class="p1">&lt;!DOCTYPE html&gt;</p>
-<p class="p1">&lt;html lang="en"&gt;</p>
-<p class="p1">&lt;head&gt;</p>
-<p class="p1">&lt;meta charset="UTF-8"/&gt;</p>
-<p class="p1">&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"/&gt;</p>
-<p class="p1">&lt;title&gt;Candidate Pipeline&lt;/title&gt;</p>
-<p class="p1">&lt;style&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>*{box-sizing:border-box;margin:0;padding:0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>:root{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--bg:#F8F9FB;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--surface:#FFFFFF;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--border:#E4E7EC;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--border-hover:#C8CDD8;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--text-primary:#0F1117;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--text-secondary:#4B5262;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--text-tertiary:#8C93A3;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--red-bg:#FEF2F2;--red-text:#991B1B;--red-border:#FECACA;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--green-bg:#F0FDF4;--green-text:#166534;--green-border:#BBF7D0;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--amber-bg:#FFFBEB;--amber-text:#92400E;--amber-border:#FDE68A;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--blue-bg:#EFF6FF;--blue-text:#1D4ED8;--blue-border:#BFDBFE;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--radius-sm:8px;--radius-md:12px;--radius-lg:16px;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>--font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh;padding:0;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* TOP NAV */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.nav-logo{font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.nav-logo-dot{width:8px;height:8px;border-radius:50%;background:#6366F1;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.nav-right{display:flex;align-items:center;gap:12px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.api-badge{font-size:12px;padding:5px 12px;border-radius:99px;background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-border);font-weight:500;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.connect-btn{font-size:13px;padding:7px 16px;border-radius:var(--radius-sm);background:#6366F1;color:#fff;border:none;cursor:pointer;font-weight:500;font-family:var(--font);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.connect-btn:hover{background:#4F46E5;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* MAIN */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.main{padding:28px 32px;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* HEADER */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.page-header{margin-bottom:24px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.page-title{font-size:24px;font-weight:600;color:var(--text-primary);letter-spacing:-0.4px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.page-sub{font-size:14px;color:var(--text-tertiary);margin-top:4px;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* BANNER */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.banner{display:none;align-items:center;gap:10px;padding:12px 16px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-md);margin-bottom:20px;font-size:13px;font-weight:500;color:var(--amber-text);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.banner svg{flex-shrink:0;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* STATS */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 20px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat-val{font-size:26px;font-weight:600;color:var(--text-primary);letter-spacing:-0.5px;line-height:1;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat-label{font-size:12px;color:var(--text-tertiary);margin-top:6px;font-weight:500;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.stat.urgent .stat-val{color:#B45309;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* BOARD */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.board{display:flex;gap:12px;align-items:flex-start;overflow-x:auto;padding-bottom:12px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.col{min-width:200px;flex:1;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 2px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.col-label-wrap{display:flex;align-items:center;gap:7px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.col-pip{width:9px;height:9px;border-radius:50%;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.col-label{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-secondary);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.col-count{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--surface);border:1px solid var(--border);color:var(--text-tertiary);font-weight:500;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* CARD */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card:hover{border-color:var(--border-hover);box-shadow:0 2px 8px rgba(0,0,0,0.06);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card:last-child{margin-bottom:0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-accent{height:3px;width:100%;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.card-body{padding:14px 16px 12px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.av-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;letter-spacing:0.5px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.cname{font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.25;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.crole{font-size:12px;color:var(--text-secondary);margin-top:3px;line-height:1.4;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.crole em{font-style:normal;color:var(--text-tertiary);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.crole strong{font-weight:500;color:var(--text-secondary);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:5px 10px;border-radius:99px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chip-int{background:var(--blue-bg);color:var(--blue-text);border:1px solid var(--blue-border);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chip-cv{background:#F8F9FB;color:var(--text-tertiary);border:1px solid var(--border);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chip-urgent{background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-border);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chip svg{width:11px;height:11px;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* CHECKS */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.checks{border-top:1px solid var(--border);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-block{padding:10px 16px;display:flex;align-items:flex-start;gap:10px;transition:background 0.2s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-block.red{background:var(--red-bg);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-block.grn{background:var(--green-bg);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-block+.chk-block{border-top:1px solid var(--border);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-icon{width:20px;height:20px;border-radius:50%;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-icon.red{background:var(--red-bg);border:1.5px solid #FCA5A5;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-icon.grn{background:var(--green-bg);border:1.5px solid #86EFAC;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-icon svg{width:10px;height:10px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-content{flex:1;min-width:0;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-title{font-size:12px;font-weight:600;margin-bottom:2px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-title.red{color:var(--red-text);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-title.grn{color:var(--green-text);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-desc{font-size:11px;color:var(--text-tertiary);line-height:1.4;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-desc.thru{text-decoration:line-through;opacity:0.6;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-cb{width:15px;height:15px;cursor:pointer;flex-shrink:0;margin-top:2px;accent-color:#166534;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.chk-cb.red{accent-color:#991B1B;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.hint{font-size:11px;font-weight:500;padding:6px 16px;background:var(--amber-bg);color:var(--amber-text);border-top:1px solid var(--amber-border);}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* NOTES */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-area{border-top:1px solid var(--border);padding:10px 16px 12px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-tertiary);margin-bottom:6px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-pre{font-size:13px;color:var(--text-secondary);line-height:1.6;cursor:pointer;min-height:18px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-pre:empty::before{content:'Click to add a note...';color:var(--text-tertiary);font-style:italic;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-ta{width:100%;font-size:13px;color:var(--text-primary);border:1px solid var(--border-hover);border-radius:var(--radius-sm);padding:8px 10px;resize:none;min-height:72px;background:var(--surface);font-family:var(--font);line-height:1.6;outline:none;display:none;transition:border-color 0.15s;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.notes-ta:focus{border-color:#6366F1;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.save-note{font-size:12px;font-weight:500;margin-top:6px;padding:5px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text-secondary);cursor:pointer;display:none;font-family:var(--font);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.save-note:hover{background:var(--surface);border-color:var(--border-hover);}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>/* MODAL */</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal-wrap{display:none;position:fixed;inset:0;background:rgba(15,17,23,0.4);z-index:200;align-items:center;justify-content:center;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal-wrap.open{display:flex;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal{background:var(--surface);border-radius:var(--radius-lg);padding:28px;width:420px;max-width:90vw;border:1px solid var(--border);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal h3{font-size:17px;font-weight:600;margin-bottom:8px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal p{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal input{width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px;font-family:var(--font);outline:none;color:var(--text-primary);background:var(--bg);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal input:focus{border-color:#6366F1;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal input::placeholder{color:var(--text-tertiary);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn-cancel{font-size:13px;padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;cursor:pointer;font-family:var(--font);color:var(--text-secondary);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn-save{font-size:13px;padding:8px 18px;border:none;border-radius:var(--radius-sm);background:#6366F1;color:#fff;cursor:pointer;font-weight:500;font-family:var(--font);}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>.btn-save:hover{background:#4F46E5;}</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>@media(max-width:700px){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.main{padding:16px;}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.stats{grid-template-columns:repeat(2,1fr);}</p>
-<p class="p1"><span class="Apple-converted-space">    </span>.nav{padding:0 16px;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>}</p>
-<p class="p1">&lt;/style&gt;</p>
-<p class="p1">&lt;/head&gt;</p>
-<p class="p1">&lt;body&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;nav class="nav"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="nav-logo"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="nav-logo-dot"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>Pipeline</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="nav-right"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;span class="api-badge" id="api-badge"&gt;Demo data&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;button class="connect-btn" onclick="document.getElementById('modal').classList.add('open')"&gt;Connect Loxo&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/nav&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;div class="main"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="page-header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="page-title"&gt;Candidate pipeline&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="page-sub" id="page-sub"&gt;Showing demo data — connect Loxo to see your real candidates&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="banner" id="banner"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"&gt;&lt;circle cx="8" cy="8" r="7"/&gt;&lt;line x1="8" y1="5" x2="8" y2="8.5"/&gt;&lt;circle cx="8" cy="11" r="0.75" fill="currentColor" stroke="none"/&gt;&lt;/svg&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;span id="banner-text"&gt;&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="stats" id="stats"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="board" id="board"&gt;&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;!-- Connect Loxo Modal --&gt;</p>
-<p class="p1">&lt;div class="modal-wrap" id="modal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;div class="modal"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;h3&gt;Connect your Loxo account&lt;/h3&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;p&gt;Enter your Loxo API key and agency slug. You can find these in your Loxo account under Settings &gt; API Keys. Only admins can generate keys.&lt;/p&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="password" id="api-key-input" placeholder="API key (Bearer token)"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="text" id="slug-input" placeholder="Agency slug (e.g. myagency)"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;input type="text" id="domain-input" placeholder="Domain (e.g. myagency.app.loxo.co)"/&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="modal-btns"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-cancel" onclick="document.getElementById('modal').classList.remove('open')"&gt;Cancel&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;button class="btn-save" onclick="saveLoxo()"&gt;Save &amp; connect&lt;/button&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>&lt;/div&gt;</p>
-<p class="p1">&lt;/div&gt;</p>
-<p class="p2"><br></p>
-<p class="p1">&lt;script&gt;</p>
-<p class="p1">const NOW=Date.now(), H=3600000;</p>
-<p class="p2"><br></p>
-<p class="p1">const stages=[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'cv',<span class="Apple-converted-space">    </span>label:'CV sent',<span class="Apple-converted-space">        </span>color:'#94A3B8'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'first', label:'1st interview',<span class="Apple-converted-space">  </span>color:'#818CF8'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'second',label:'2nd interview',<span class="Apple-converted-space">  </span>color:'#F59E0B'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'third', label:'3rd interview',<span class="Apple-converted-space">  </span>color:'#F97316'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:'final', label:'Final',<span class="Apple-converted-space">          </span>color:'#22C55E'},</p>
-<p class="p1">];</p>
-<p class="p2"><br></p>
-<p class="p1">const demoCandidates=[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:1,name:'Sarah Mitchell',role:'Marketing Director',company:'Vitesse', <span class="Apple-converted-space">  </span>stage:'cv',<span class="Apple-converted-space">    </span>cvDate:'14 Apr 2026',interviewTs:null},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:2,name:'James Okafor',<span class="Apple-converted-space">  </span>role:'Product Designer',<span class="Apple-converted-space">  </span>company:'Borderless',stage:'cv',<span class="Apple-converted-space">    </span>cvDate:'16 Apr 2026',interviewTs:null},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:3,name:'Priya Sharma',<span class="Apple-converted-space">  </span>role:'Senior Developer',<span class="Apple-converted-space">  </span>company:'Vitesse', <span class="Apple-converted-space">  </span>stage:'first', cvDate:'10 Apr 2026',interviewTs:NOW+18*H},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:4,name:'Tom Elliot',<span class="Apple-converted-space">    </span>role:'SDR Manager', <span class="Apple-converted-space">      </span>company:'Borderless',stage:'first', cvDate:'11 Apr 2026',interviewTs:NOW+50*H},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:5,name:'Amara Diallo',<span class="Apple-converted-space">  </span>role:'Finance Analyst', <span class="Apple-converted-space">  </span>company:'Acme Corp', stage:'second',cvDate:'8 Apr 2026', interviewTs:NOW+6*H},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:6,name:'Leon Bauer',<span class="Apple-converted-space">    </span>role:'Operations Manager',company:'Vitesse', <span class="Apple-converted-space">  </span>stage:'second',cvDate:'7 Apr 2026', interviewTs:NOW+72*H},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:7,name:'Chloe Park',<span class="Apple-converted-space">    </span>role:'Brand Strategist',<span class="Apple-converted-space">  </span>company:'Borderless',stage:'third', cvDate:'5 Apr 2026', interviewTs:NOW+96*H},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{id:8,name:'Raj Patel', <span class="Apple-converted-space">    </span>role:'Head of Growth',<span class="Apple-converted-space">    </span>company:'Acme Corp', stage:'final', cvDate:'2 Apr 2026', interviewTs:NOW+52*H},</p>
-<p class="p1">];</p>
-<p class="p2"><br></p>
-<p class="p1">const avColors=[</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{bg:'#EDE9FE',fg:'#5B21B6'},{bg:'#FCE7F3',fg:'#9D174D'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{bg:'#DCFCE7',fg:'#166534'},{bg:'#FEF3C7',fg:'#92400E'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{bg:'#DBEAFE',fg:'#1E40AF'},{bg:'#FFE4E6',fg:'#9F1239'},</p>
-<p class="p1"><span class="Apple-converted-space">  </span>{bg:'#F0FDF4',fg:'#14532D'},{bg:'#FFF7ED',fg:'#7C2D12'},</p>
-<p class="p1">];</p>
-<p class="p2"><br></p>
-<p class="p1">let candidates=[...demoCandidates];</p>
-<p class="p1">const state={};</p>
-<p class="p1">function initState(list){list.forEach((c,i)=&gt;{if(!state[c.id])state[c.id]={prepped:false,confirmed:false,note:'',avColor:avColors[i%avColors.length]};});}</p>
-<p class="p1">initState(candidates);</p>
-<p class="p2"><br></p>
-<p class="p1">function ini(n){return n.split(' ').map(x=&gt;x[0]).join('');}</p>
-<p class="p1">function fmtTs(ts){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const d=new Date(ts),hrs=(ts-NOW)/H;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const t=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(hrs&lt;2)return 'Very soon';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(hrs&lt;24)return t+' today';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+t;</p>
-<p class="p1">}</p>
-<p class="p1">function u24(ts){return ts&amp;&amp;(ts-NOW)&gt;0&amp;&amp;(ts-NOW)&lt;24*H;}</p>
-<p class="p2"><br></p>
-<p class="p1">function checkIcon(done){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return done</p>
-<p class="p1"><span class="Apple-converted-space">    </span>?`&lt;svg viewBox="0 0 10 10" fill="none" stroke="#166534" stroke-width="2.2"&gt;&lt;polyline points="2,5 4,7 8,3"/&gt;&lt;/svg&gt;`</p>
-<p class="p1"><span class="Apple-converted-space">    </span>:`&lt;svg viewBox="0 0 10 10" fill="none" stroke="#991B1B" stroke-width="1.8"&gt;&lt;line x1="3" y1="3" x2="7" y2="7"/&gt;&lt;line x1="7" y1="3" x2="3" y2="7"/&gt;&lt;/svg&gt;`;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function calIcon(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>return `&lt;svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"&gt;&lt;rect x="0.7" y="1.5" width="9.6" height="8.5" rx="1.5"/&gt;&lt;line x1="3.5" y1="0.5" x2="3.5" y2="2.5"/&gt;&lt;line x1="7.5" y1="0.5" x2="7.5" y2="2.5"/&gt;&lt;line x1="0.7" y1="4.5" x2="10.3" y2="4.5"/&gt;&lt;/svg&gt;`;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function renderStats(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const total=candidates.length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const prepped=candidates.filter(c=&gt;state[c.id]&amp;&amp;state[c.id].prepped).length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const interviews=candidates.filter(c=&gt;c.interviewTs).length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const confirmed=candidates.filter(c=&gt;c.interviewTs&amp;&amp;state[c.id]&amp;&amp;state[c.id].confirmed).length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const urgent=candidates.filter(c=&gt;c.interviewTs&amp;&amp;u24(c.interviewTs)&amp;&amp;state[c.id]&amp;&amp;!state[c.id].confirmed).length;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('stats').innerHTML=`</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="stat"&gt;&lt;div class="stat-val"&gt;${total}&lt;/div&gt;&lt;div class="stat-label"&gt;Total candidates&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="stat"&gt;&lt;div class="stat-val"&gt;${prepped}/${total}&lt;/div&gt;&lt;div class="stat-label"&gt;Prepped&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="stat"&gt;&lt;div class="stat-val"&gt;${confirmed}/${interviews}&lt;/div&gt;&lt;div class="stat-label"&gt;Interviews confirmed&lt;/div&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;div class="stat urgent"&gt;&lt;div class="stat-val"&gt;${urgent}&lt;/div&gt;&lt;div class="stat-label"&gt;Under 24hrs unconfirmed&lt;/div&gt;&lt;/div&gt;`;</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function renderBanner(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const urgent=candidates.filter(c=&gt;c.interviewTs&amp;&amp;u24(c.interviewTs)&amp;&amp;state[c.id]&amp;&amp;!state[c.id].confirmed);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const b=document.getElementById('banner');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(urgent.length){</p>
-<p class="p1"><span class="Apple-converted-space">    </span>b.style.display='flex';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>document.getElementById('banner-text').textContent=urgent.length===1</p>
-<p class="p1"><span class="Apple-converted-space">      </span>?urgent[0].name+' has an interview in under 24hrs and is not yet confirmed!'</p>
-<p class="p1"><span class="Apple-converted-space">      </span>:urgent.length+' candidates have interviews under 24hrs — not yet confirmed!';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>} else b.style.display='none';</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function render(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderStats();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>renderBanner();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const board=document.getElementById('board');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>board.innerHTML='';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">  </span>stages.forEach(stage=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const sc=candidates.filter(c=&gt;c.stage===stage.id);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>const col=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">    </span>col.className='col';</p>
-<p class="p1"><span class="Apple-converted-space">    </span>col.innerHTML=`&lt;div class="col-header"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;div class="col-label-wrap"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="col-pip" style="background:${stage.color}"&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;span class="col-label"&gt;${stage.label}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>&lt;span class="col-count"&gt;${sc.length}&lt;/span&gt;</p>
-<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;`;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">    </span>sc.forEach(c=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const s=state[c.id]||(state[c.id]={prepped:false,confirmed:false,note:'',avColor:avColors[0]});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const hasInt=!!c.interviewTs;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const isU24=u24(c.interviewTs);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const stObj=stages.find(st=&gt;st.id===c.stage);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const av=s.avColor;</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const card=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>card.className='card';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const accent=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>accent.className='card-accent';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>accent.style.background=stObj.color;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>card.appendChild(accent);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const body=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>body.className='card-body';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const avRow=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>avRow.className='av-row';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>avRow.innerHTML=`&lt;div class="av" style="background:${av.bg};color:${av.fg}"&gt;${ini(c.name)}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div style="min-width:0"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="cname"&gt;${c.name}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="crole"&gt;${c.role} &lt;em&gt;at&lt;/em&gt; &lt;strong&gt;${c.company}&lt;/strong&gt;&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>body.appendChild(avRow);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const chips=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>chips.className='chips';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>if(hasInt){</p>
-<p class="p1"><span class="Apple-converted-space">        </span>chips.innerHTML=`&lt;span class="chip chip-int"&gt;${calIcon()} ${fmtTs(c.interviewTs)}&lt;/span&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if(isU24&amp;&amp;!s.confirmed) chips.innerHTML+=`&lt;span class="chip chip-urgent"&gt;Under 24hrs&lt;/span&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>} else {</p>
-<p class="p1"><span class="Apple-converted-space">        </span>chips.innerHTML=`&lt;span class="chip chip-cv"&gt;CV sent ${c.cvDate}&lt;/span&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>body.appendChild(chips);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>card.appendChild(body);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const checks=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>checks.className='checks';</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const b1=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>b1.className='chk-block '+(s.prepped?'grn':'red');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>b1.innerHTML=`&lt;div class="chk-icon ${s.prepped?'grn':'red'}"&gt;${checkIcon(s.prepped)}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="chk-content"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="chk-title ${s.prepped?'grn':'red'}"&gt;${s.prepped?'Prep complete':'Prep needed'}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="chk-desc${s.prepped?' thru':''}"&gt;Prepped &amp; prep email sent&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const cb1=document.createElement('input');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>cb1.type='checkbox';cb1.className='chk-cb'+(s.prepped?'':' red');cb1.checked=s.prepped;</p>
-<p class="p1"><span class="Apple-converted-space">      </span>cb1.addEventListener('change',()=&gt;{state[c.id].prepped=cb1.checked;render();});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>b1.appendChild(cb1);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>checks.appendChild(b1);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>if(hasInt){</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const b2=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>b2.className='chk-block '+(s.confirmed?'grn':'red');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>b2.innerHTML=`&lt;div class="chk-icon ${s.confirmed?'grn':'red'}"&gt;${checkIcon(s.confirmed)}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;div class="chk-content"&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="chk-title ${s.confirmed?'grn':'red'}"&gt;${s.confirmed?'All confirmed':'Not confirmed'}&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="chk-desc${s.confirmed?' thru':''}"&gt;Confirmed, locked in &amp; good luck sent&lt;/div&gt;</p>
-<p class="p1"><span class="Apple-converted-space">          </span>&lt;/div&gt;`;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>const cb2=document.createElement('input');</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cb2.type='checkbox';cb2.className='chk-cb'+(s.confirmed?'':' red');cb2.checked=s.confirmed;</p>
-<p class="p1"><span class="Apple-converted-space">        </span>cb2.addEventListener('change',()=&gt;{state[c.id].confirmed=cb2.checked;render();});</p>
-<p class="p1"><span class="Apple-converted-space">        </span>b2.appendChild(cb2);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>checks.appendChild(b2);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>if(!s.confirmed&amp;&amp;isU24){</p>
-<p class="p1"><span class="Apple-converted-space">          </span>const h=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">          </span>h.className='hint';</p>
-<p class="p1"><span class="Apple-converted-space">          </span>h.textContent='Interview under 24hrs — confirm now!';</p>
-<p class="p1"><span class="Apple-converted-space">          </span>checks.appendChild(h);</p>
-<p class="p1"><span class="Apple-converted-space">        </span>}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>}</p>
-<p class="p1"><span class="Apple-converted-space">      </span>card.appendChild(checks);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>const na=document.createElement('div');</p>
-<p class="p1"><span class="Apple-converted-space">      </span>na.className='notes-area';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const nl=document.createElement('div');nl.className='notes-lbl';nl.textContent='Notes';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const pre=document.createElement('div');pre.className='notes-pre';pre.textContent=s.note||'';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const ta=document.createElement('textarea');ta.className='notes-ta';ta.value=s.note||'';ta.placeholder='Type a note...';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>const sb=document.createElement('button');sb.className='save-note';sb.textContent='Save note';</p>
-<p class="p1"><span class="Apple-converted-space">      </span>pre.addEventListener('click',()=&gt;{pre.style.display='none';ta.style.display='block';sb.style.display='inline-block';ta.focus();});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>sb.addEventListener('click',()=&gt;{state[c.id].note=ta.value;pre.textContent=ta.value;ta.style.display='none';sb.style.display='none';pre.style.display='block';});</p>
-<p class="p1"><span class="Apple-converted-space">      </span>na.appendChild(nl);na.appendChild(pre);na.appendChild(ta);na.appendChild(sb);</p>
-<p class="p1"><span class="Apple-converted-space">      </span>card.appendChild(na);</p>
-<p class="p2"><br></p>
-<p class="p1"><span class="Apple-converted-space">      </span>col.appendChild(card);</p>
-<p class="p1"><span class="Apple-converted-space">    </span>});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>board.appendChild(col);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>});</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">function saveLoxo(){</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const key=document.getElementById('api-key-input').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const slug=document.getElementById('slug-input').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const domain=document.getElementById('domain-input').value.trim();</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(!key||!slug||!domain){alert('Please fill in all three fields.');return;}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>localStorage.setItem('loxo_key',key);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>localStorage.setItem('loxo_slug',slug);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>localStorage.setItem('loxo_domain',domain);</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('modal').classList.remove('open');</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('api-badge').textContent='Loxo connected';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('api-badge').style.background='#F0FDF4';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('api-badge').style.color='#166534';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('api-badge').style.borderColor='#BBF7D0';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>document.getElementById('page-sub').textContent='Connected to Loxo — real candidate data will appear when API is wired up';</p>
-<p class="p1"><span class="Apple-converted-space">  </span>alert('Credentials saved! Once the backend is set up, your real Loxo candidates will appear here automatically.');</p>
-<p class="p1">}</p>
-<p class="p2"><br></p>
-<p class="p1">if('Notification'in window&amp;&amp;Notification.permission==='default')Notification.requestPermission();</p>
-<p class="p1">candidates.filter(c=&gt;c.interviewTs).forEach(c=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">  </span>const ms=c.interviewTs-NOW-24*H;</p>
-<p class="p1"><span class="Apple-converted-space">  </span>if(ms&gt;0)setTimeout(()=&gt;{</p>
-<p class="p1"><span class="Apple-converted-space">    </span>if(state[c.id]&amp;&amp;!state[c.id].confirmed&amp;&amp;Notification.permission==='granted'){</p>
-<p class="p1"><span class="Apple-converted-space">      </span>new Notification('Reminder: '+c.name,{body:c.name+' interviews for '+c.role+' at '+c.company+' in 24hrs — not confirmed!'});</p>
-<p class="p1"><span class="Apple-converted-space">    </span>}</p>
-<p class="p1"><span class="Apple-converted-space">  </span>},ms);</p>
-<p class="p1">});</p>
-<p class="p2"><br></p>
-<p class="p1">render();</p>
-<p class="p1">&lt;/script&gt;</p>
-<p class="p1">&lt;/body&gt;</p>
-<p class="p1">&lt;/html&gt;</p>
+
+<nav class="nav">
+  <div class="nav-logo">
+    <div class="nav-logo-dot"></div>
+    Pipeline
+  </div>
+  <div class="nav-right">
+    <span class="api-badge" id="api-badge">Demo data</span>
+    <button class="connect-btn" onclick="document.getElementById('modal').classList.add('open')">Connect Loxo</button>
+  </div>
+</nav>
+
+<div class="main">
+  <div class="page-header">
+    <div class="page-title">Candidate pipeline</div>
+    <div class="page-sub" id="page-sub">Showing demo data — connect Loxo to see your real candidates</div>
+  </div>
+
+  <div class="banner" id="banner">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="11" r="0.75" fill="currentColor" stroke="none"/></svg>
+    <span id="banner-text"></span>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="board" id="board"></div>
+</div>
+
+<!-- Connect Loxo Modal -->
+<div class="modal-wrap" id="modal">
+  <div class="modal">
+    <h3>Connect your Loxo account</h3>
+    <p>Enter your Loxo API key and agency slug. You can find these in your Loxo account under Settings > API Keys. Only admins can generate keys.</p>
+    <input type="password" id="api-key-input" placeholder="API key (Bearer token)"/>
+    <input type="text" id="slug-input" placeholder="Agency slug (e.g. myagency)"/>
+    <input type="text" id="domain-input" placeholder="Domain (e.g. myagency.app.loxo.co)"/>
+    <div class="modal-btns">
+      <button class="btn-cancel" onclick="document.getElementById('modal').classList.remove('open')">Cancel</button>
+      <button class="btn-save" onclick="saveLoxo()">Save & connect</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const NOW=Date.now(), H=3600000;
+
+const stages=[
+  {id:'cv',    label:'CV sent',        color:'#94A3B8'},
+  {id:'first', label:'1st interview',  color:'#818CF8'},
+  {id:'second',label:'2nd interview',  color:'#F59E0B'},
+  {id:'third', label:'3rd interview',  color:'#F97316'},
+  {id:'final', label:'Final',          color:'#22C55E'},
+];
+
+const demoCandidates=[
+  {id:1,name:'Sarah Mitchell',role:'Marketing Director',company:'Vitesse',   stage:'cv',    cvDate:'14 Apr 2026',interviewTs:null},
+  {id:2,name:'James Okafor',  role:'Product Designer',  company:'Borderless',stage:'cv',    cvDate:'16 Apr 2026',interviewTs:null},
+  {id:3,name:'Priya Sharma',  role:'Senior Developer',  company:'Vitesse',   stage:'first', cvDate:'10 Apr 2026',interviewTs:NOW+18*H},
+  {id:4,name:'Tom Elliot',    role:'SDR Manager',       company:'Borderless',stage:'first', cvDate:'11 Apr 2026',interviewTs:NOW+50*H},
+  {id:5,name:'Amara Diallo',  role:'Finance Analyst',   company:'Acme Corp', stage:'second',cvDate:'8 Apr 2026', interviewTs:NOW+6*H},
+  {id:6,name:'Leon Bauer',    role:'Operations Manager',company:'Vitesse',   stage:'second',cvDate:'7 Apr 2026', interviewTs:NOW+72*H},
+  {id:7,name:'Chloe Park',    role:'Brand Strategist',  company:'Borderless',stage:'third', cvDate:'5 Apr 2026', interviewTs:NOW+96*H},
+  {id:8,name:'Raj Patel',     role:'Head of Growth',    company:'Acme Corp', stage:'final', cvDate:'2 Apr 2026', interviewTs:NOW+52*H},
+];
+
+const avColors=[
+  {bg:'#EDE9FE',fg:'#5B21B6'},{bg:'#FCE7F3',fg:'#9D174D'},
+  {bg:'#DCFCE7',fg:'#166534'},{bg:'#FEF3C7',fg:'#92400E'},
+  {bg:'#DBEAFE',fg:'#1E40AF'},{bg:'#FFE4E6',fg:'#9F1239'},
+  {bg:'#F0FDF4',fg:'#14532D'},{bg:'#FFF7ED',fg:'#7C2D12'},
+];
+
+let candidates=[...demoCandidates];
+const state={};
+function initState(list){list.forEach((c,i)=>{if(!state[c.id])state[c.id]={prepped:false,confirmed:false,note:'',avColor:avColors[i%avColors.length]};});}
+initState(candidates);
+
+function ini(n){return n.split(' ').map(x=>x[0]).join('');}
+function fmtTs(ts){
+  const d=new Date(ts),hrs=(ts-NOW)/H;
+  const t=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  if(hrs<2)return 'Very soon';
+  if(hrs<24)return t+' today';
+  return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+t;
+}
+function u24(ts){return ts&&(ts-NOW)>0&&(ts-NOW)<24*H;}
+
+function checkIcon(done){
+  return done
+    ?`<svg viewBox="0 0 10 10" fill="none" stroke="#166534" stroke-width="2.2"><polyline points="2,5 4,7 8,3"/></svg>`
+    :`<svg viewBox="0 0 10 10" fill="none" stroke="#991B1B" stroke-width="1.8"><line x1="3" y1="3" x2="7" y2="7"/><line x1="7" y1="3" x2="3" y2="7"/></svg>`;
+}
+
+function calIcon(){
+  return `<svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="0.7" y="1.5" width="9.6" height="8.5" rx="1.5"/><line x1="3.5" y1="0.5" x2="3.5" y2="2.5"/><line x1="7.5" y1="0.5" x2="7.5" y2="2.5"/><line x1="0.7" y1="4.5" x2="10.3" y2="4.5"/></svg>`;
+}
+
+function renderStats(){
+  const total=candidates.length;
+  const prepped=candidates.filter(c=>state[c.id]&&state[c.id].prepped).length;
+  const interviews=candidates.filter(c=>c.interviewTs).length;
+  const confirmed=candidates.filter(c=>c.interviewTs&&state[c.id]&&state[c.id].confirmed).length;
+  const urgent=candidates.filter(c=>c.interviewTs&&u24(c.interviewTs)&&state[c.id]&&!state[c.id].confirmed).length;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat"><div class="stat-val">${total}</div><div class="stat-label">Total candidates</div></div>
+    <div class="stat"><div class="stat-val">${prepped}/${total}</div><div class="stat-label">Prepped</div></div>
+    <div class="stat"><div class="stat-val">${confirmed}/${interviews}</div><div class="stat-label">Interviews confirmed</div></div>
+    <div class="stat urgent"><div class="stat-val">${urgent}</div><div class="stat-label">Under 24hrs unconfirmed</div></div>`;
+}
+
+function renderBanner(){
+  const urgent=candidates.filter(c=>c.interviewTs&&u24(c.interviewTs)&&state[c.id]&&!state[c.id].confirmed);
+  const b=document.getElementById('banner');
+  if(urgent.length){
+    b.style.display='flex';
+    document.getElementById('banner-text').textContent=urgent.length===1
+      ?urgent[0].name+' has an interview in under 24hrs and is not yet confirmed!'
+      :urgent.length+' candidates have interviews under 24hrs — not yet confirmed!';
+  } else b.style.display='none';
+}
+
+function render(){
+  renderStats();
+  renderBanner();
+  const board=document.getElementById('board');
+  board.innerHTML='';
+
+  stages.forEach(stage=>{
+    const sc=candidates.filter(c=>c.stage===stage.id);
+    const col=document.createElement('div');
+    col.className='col';
+    col.innerHTML=`<div class="col-header">
+      <div class="col-label-wrap">
+        <div class="col-pip" style="background:${stage.color}"></div>
+        <span class="col-label">${stage.label}</span>
+      </div>
+      <span class="col-count">${sc.length}</span>
+    </div>`;
+
+    sc.forEach(c=>{
+      const s=state[c.id]||(state[c.id]={prepped:false,confirmed:false,note:'',avColor:avColors[0]});
+      const hasInt=!!c.interviewTs;
+      const isU24=u24(c.interviewTs);
+      const stObj=stages.find(st=>st.id===c.stage);
+      const av=s.avColor;
+
+      const card=document.createElement('div');
+      card.className='card';
+
+      const accent=document.createElement('div');
+      accent.className='card-accent';
+      accent.style.background=stObj.color;
+      card.appendChild(accent);
+
+      const body=document.createElement('div');
+      body.className='card-body';
+
+      const avRow=document.createElement('div');
+      avRow.className='av-row';
+      avRow.innerHTML=`<div class="av" style="background:${av.bg};color:${av.fg}">${ini(c.name)}</div>
+        <div style="min-width:0">
+          <div class="cname">${c.name}</div>
+          <div class="crole">${c.role} <em>at</em> <strong>${c.company}</strong></div>
+        </div>`;
+      body.appendChild(avRow);
+
+      const chips=document.createElement('div');
+      chips.className='chips';
+      if(hasInt){
+        chips.innerHTML=`<span class="chip chip-int">${calIcon()} ${fmtTs(c.interviewTs)}</span>`;
+        if(isU24&&!s.confirmed) chips.innerHTML+=`<span class="chip chip-urgent">Under 24hrs</span>`;
+      } else {
+        chips.innerHTML=`<span class="chip chip-cv">CV sent ${c.cvDate}</span>`;
+      }
+      body.appendChild(chips);
+      card.appendChild(body);
+
+      const checks=document.createElement('div');
+      checks.className='checks';
+
+      const b1=document.createElement('div');
+      b1.className='chk-block '+(s.prepped?'grn':'red');
+      b1.innerHTML=`<div class="chk-icon ${s.prepped?'grn':'red'}">${checkIcon(s.prepped)}</div>
+        <div class="chk-content">
+          <div class="chk-title ${s.prepped?'grn':'red'}">${s.prepped?'Prep complete':'Prep needed'}</div>
+          <div class="chk-desc${s.prepped?' thru':''}">Prepped & prep email sent</div>
+        </div>`;
+      const cb1=document.createElement('input');
+      cb1.type='checkbox';cb1.className='chk-cb'+(s.prepped?'':' red');cb1.checked=s.prepped;
+      cb1.addEventListener('change',()=>{state[c.id].prepped=cb1.checked;render();});
+      b1.appendChild(cb1);
+      checks.appendChild(b1);
+
+      if(hasInt){
+        const b2=document.createElement('div');
+        b2.className='chk-block '+(s.confirmed?'grn':'red');
+        b2.innerHTML=`<div class="chk-icon ${s.confirmed?'grn':'red'}">${checkIcon(s.confirmed)}</div>
+          <div class="chk-content">
+            <div class="chk-title ${s.confirmed?'grn':'red'}">${s.confirmed?'All confirmed':'Not confirmed'}</div>
+            <div class="chk-desc${s.confirmed?' thru':''}">Confirmed, locked in & good luck sent</div>
+          </div>`;
+        const cb2=document.createElement('input');
+        cb2.type='checkbox';cb2.className='chk-cb'+(s.confirmed?'':' red');cb2.checked=s.confirmed;
+        cb2.addEventListener('change',()=>{state[c.id].confirmed=cb2.checked;render();});
+        b2.appendChild(cb2);
+        checks.appendChild(b2);
+        if(!s.confirmed&&isU24){
+          const h=document.createElement('div');
+          h.className='hint';
+          h.textContent='Interview under 24hrs — confirm now!';
+          checks.appendChild(h);
+        }
+      }
+      card.appendChild(checks);
+
+      const na=document.createElement('div');
+      na.className='notes-area';
+      const nl=document.createElement('div');nl.className='notes-lbl';nl.textContent='Notes';
+      const pre=document.createElement('div');pre.className='notes-pre';pre.textContent=s.note||'';
+      const ta=document.createElement('textarea');ta.className='notes-ta';ta.value=s.note||'';ta.placeholder='Type a note...';
+      const sb=document.createElement('button');sb.className='save-note';sb.textContent='Save note';
+      pre.addEventListener('click',()=>{pre.style.display='none';ta.style.display='block';sb.style.display='inline-block';ta.focus();});
+      sb.addEventListener('click',()=>{state[c.id].note=ta.value;pre.textContent=ta.value;ta.style.display='none';sb.style.display='none';pre.style.display='block';});
+      na.appendChild(nl);na.appendChild(pre);na.appendChild(ta);na.appendChild(sb);
+      card.appendChild(na);
+
+      col.appendChild(card);
+    });
+    board.appendChild(col);
+  });
+}
+
+function saveLoxo(){
+  const key=document.getElementById('api-key-input').value.trim();
+  const slug=document.getElementById('slug-input').value.trim();
+  const domain=document.getElementById('domain-input').value.trim();
+  if(!key||!slug||!domain){alert('Please fill in all three fields.');return;}
+  localStorage.setItem('loxo_key',key);
+  localStorage.setItem('loxo_slug',slug);
+  localStorage.setItem('loxo_domain',domain);
+  document.getElementById('modal').classList.remove('open');
+  document.getElementById('api-badge').textContent='Loxo connected';
+  document.getElementById('api-badge').style.background='#F0FDF4';
+  document.getElementById('api-badge').style.color='#166534';
+  document.getElementById('api-badge').style.borderColor='#BBF7D0';
+  document.getElementById('page-sub').textContent='Connected to Loxo — real candidate data will appear when API is wired up';
+  alert('Credentials saved! Once the backend is set up, your real Loxo candidates will appear here automatically.');
+}
+
+if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+candidates.filter(c=>c.interviewTs).forEach(c=>{
+  const ms=c.interviewTs-NOW-24*H;
+  if(ms>0)setTimeout(()=>{
+    if(state[c.id]&&!state[c.id].confirmed&&Notification.permission==='granted'){
+      new Notification('Reminder: '+c.name,{body:c.name+' interviews for '+c.role+' at '+c.company+' in 24hrs — not confirmed!'});
+    }
+  },ms);
+});
+
+render();
+</script>
 </body>
 </html>
