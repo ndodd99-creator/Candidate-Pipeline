@@ -159,12 +159,12 @@ async function loadCandidates(){
   document.getElementById('page-sub').textContent='Loading your candidates...';
   document.getElementById('board-wrap').innerHTML='<div class="loading-state">Fetching candidates from Loxo...</div>';
   try{
-    const res=await fetch(`/api/loxo?endpoint=candidates`,{
+    const res=await fetch(`/api/loxo?endpoint=people`,{
       headers:{'Accept':'application/json'}
     });
     if(!res.ok)throw new Error(res.status);
     const data=await res.json();
-    const raw=data.candidates||data.data||data||[];
+    const raw=data.people||data.candidates||data.data||data||[];
     candidates=raw.map((c,i)=>({
       id:c.id||i,
       name:(c.person_name||c.name||'Unknown').trim(),
