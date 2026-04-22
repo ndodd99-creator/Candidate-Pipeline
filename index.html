@@ -3,83 +3,61 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Candidate Pipeline</title>
+<title>Candidate Pipeline — Scene</title>
 <style>
   *{box-sizing:border-box;margin:0;padding:0;}
   :root{
-    --bg:#F8F9FB;
-    --surface:#FFFFFF;
-    --border:#E4E7EC;
-    --border-hover:#C8CDD8;
-    --text-primary:#0F1117;
-    --text-secondary:#4B5262;
-    --text-tertiary:#8C93A3;
-    --red-bg:#FEF2F2;--red-text:#991B1B;--red-border:#FECACA;
-    --green-bg:#F0FDF4;--green-text:#166534;--green-border:#BBF7D0;
+    --bg:#F8F9FB;--surface:#fff;--border:#E4E7EC;--border-hover:#C8CDD8;
+    --text-primary:#0F1117;--text-secondary:#4B5262;--text-tertiary:#8C93A3;
+    --red-bg:#FEF2F2;--red-text:#991B1B;
+    --green-bg:#F0FDF4;--green-text:#166534;
     --amber-bg:#FFFBEB;--amber-text:#92400E;--amber-border:#FDE68A;
     --blue-bg:#EFF6FF;--blue-text:#1D4ED8;--blue-border:#BFDBFE;
-    --radius-sm:8px;--radius-md:12px;--radius-lg:16px;
     --font:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;
   }
-  body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh;padding:0;}
-
-  /* TOP NAV */
+  body{font-family:var(--font);background:var(--bg);color:var(--text-primary);min-height:100vh;}
   .nav{background:var(--surface);border-bottom:1px solid var(--border);padding:0 32px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
-  .nav-logo{font-size:16px;font-weight:600;color:var(--text-primary);letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;}
-  .nav-logo-dot{width:8px;height:8px;border-radius:50%;background:#6366F1;}
-  .nav-right{display:flex;align-items:center;gap:12px;}
-  .api-badge{font-size:12px;padding:5px 12px;border-radius:99px;background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-border);font-weight:500;}
-  .connect-btn{font-size:13px;padding:7px 16px;border-radius:var(--radius-sm);background:#6366F1;color:#fff;border:none;cursor:pointer;font-weight:500;font-family:var(--font);}
-  .connect-btn:hover{background:#4F46E5;}
-
-  /* MAIN */
+  .nav-logo{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px;}
+  .nav-dot{width:8px;height:8px;border-radius:50%;background:#6366F1;}
+  .nav-right{display:flex;align-items:center;gap:10px;}
+  .status-pill{font-size:12px;padding:5px 12px;border-radius:99px;font-weight:500;border:1px solid;}
+  .status-pill.connected{background:#F0FDF4;color:#166534;border-color:#BBF7D0;}
+  .status-pill.demo{background:var(--amber-bg);color:var(--amber-text);border-color:var(--amber-border);}
+  .status-pill.loading{background:var(--blue-bg);color:var(--blue-text);border-color:var(--blue-border);}
+  .status-pill.error{background:var(--red-bg);color:var(--red-text);border-color:#FECACA;}
+  .refresh-btn{font-size:13px;padding:7px 14px;border-radius:8px;background:var(--surface);color:var(--text-secondary);border:1px solid var(--border);cursor:pointer;font-family:var(--font);display:flex;align-items:center;gap:5px;}
+  .refresh-btn:hover{background:var(--bg);}
   .main{padding:28px 32px;}
-
-  /* HEADER */
-  .page-header{margin-bottom:24px;}
-  .page-title{font-size:24px;font-weight:600;color:var(--text-primary);letter-spacing:-0.4px;}
-  .page-sub{font-size:14px;color:var(--text-tertiary);margin-top:4px;}
-
-  /* BANNER */
-  .banner{display:none;align-items:center;gap:10px;padding:12px 16px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:var(--radius-md);margin-bottom:20px;font-size:13px;font-weight:500;color:var(--amber-text);}
-  .banner svg{flex-shrink:0;}
-
-  /* STATS */
+  .page-title{font-size:24px;font-weight:600;letter-spacing:-0.4px;margin-bottom:4px;}
+  .page-sub{font-size:14px;color:var(--text-tertiary);margin-bottom:24px;}
+  .banner{display:none;align-items:center;gap:10px;padding:12px 16px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:12px;margin-bottom:20px;font-size:13px;font-weight:500;color:var(--amber-text);}
   .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
-  .stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);padding:16px 20px;}
-  .stat-val{font-size:26px;font-weight:600;color:var(--text-primary);letter-spacing:-0.5px;line-height:1;}
+  .stat{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 20px;}
+  .stat-val{font-size:26px;font-weight:600;letter-spacing:-0.5px;line-height:1;}
   .stat-label{font-size:12px;color:var(--text-tertiary);margin-top:6px;font-weight:500;}
   .stat.urgent .stat-val{color:#B45309;}
-
-  /* BOARD */
   .board{display:flex;gap:12px;align-items:flex-start;overflow-x:auto;padding-bottom:12px;}
   .col{min-width:200px;flex:1;}
   .col-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:0 2px;}
-  .col-label-wrap{display:flex;align-items:center;gap:7px;}
   .col-pip{width:9px;height:9px;border-radius:50%;}
   .col-label{font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text-secondary);}
-  .col-count{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--surface);border:1px solid var(--border);color:var(--text-tertiary);font-weight:500;}
-
-  /* CARD */
-  .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-md);margin-bottom:8px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s;}
+  .col-count{font-size:11px;padding:2px 8px;border-radius:99px;background:var(--surface);border:1px solid var(--border);color:var(--text-tertiary);}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;transition:border-color 0.15s,box-shadow 0.15s;}
   .card:hover{border-color:var(--border-hover);box-shadow:0 2px 8px rgba(0,0,0,0.06);}
-  .card:last-child{margin-bottom:0;}
-  .card-accent{height:3px;width:100%;}
+  .card-accent{height:3px;}
   .card-body{padding:14px 16px 12px;}
-  .av-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
-  .av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;letter-spacing:0.5px;}
-  .cname{font-size:14px;font-weight:600;color:var(--text-primary);line-height:1.25;}
-  .crole{font-size:12px;color:var(--text-secondary);margin-top:3px;line-height:1.4;}
-  .crole em{font-style:normal;color:var(--text-tertiary);}
-  .crole strong{font-weight:500;color:var(--text-secondary);}
-  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:4px;}
+  .av-row{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+  .av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;overflow:hidden;}
+  .av img{width:100%;height:100%;object-fit:cover;}
+  .cname{font-size:14px;font-weight:600;line-height:1.25;}
+  .crole{font-size:12px;color:var(--text-secondary);margin-top:2px;}
+  .co-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:99px;background:#EEF2FF;color:#3730A3;border:1px solid #C7D2FE;margin-top:5px;}
+  .co-dot{width:6px;height:6px;border-radius:50%;background:#6366F1;flex-shrink:0;}
+  .chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px;}
   .chip{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:500;padding:5px 10px;border-radius:99px;}
   .chip-int{background:var(--blue-bg);color:var(--blue-text);border:1px solid var(--blue-border);}
   .chip-cv{background:#F8F9FB;color:var(--text-tertiary);border:1px solid var(--border);}
   .chip-urgent{background:var(--amber-bg);color:var(--amber-text);border:1px solid var(--amber-border);}
-  .chip svg{width:11px;height:11px;}
-
-  /* CHECKS */
   .checks{border-top:1px solid var(--border);}
   .chk-block{padding:10px 16px;display:flex;align-items:flex-start;gap:10px;transition:background 0.2s;}
   .chk-block.red{background:var(--red-bg);}
@@ -89,7 +67,7 @@
   .chk-icon.red{background:var(--red-bg);border:1.5px solid #FCA5A5;}
   .chk-icon.grn{background:var(--green-bg);border:1.5px solid #86EFAC;}
   .chk-icon svg{width:10px;height:10px;}
-  .chk-content{flex:1;min-width:0;}
+  .chk-content{flex:1;}
   .chk-title{font-size:12px;font-weight:600;margin-bottom:2px;}
   .chk-title.red{color:var(--red-text);}
   .chk-title.grn{color:var(--green-text);}
@@ -98,298 +76,205 @@
   .chk-cb{width:15px;height:15px;cursor:pointer;flex-shrink:0;margin-top:2px;accent-color:#166534;}
   .chk-cb.red{accent-color:#991B1B;}
   .hint{font-size:11px;font-weight:500;padding:6px 16px;background:var(--amber-bg);color:var(--amber-text);border-top:1px solid var(--amber-border);}
-
-  /* NOTES */
   .notes-area{border-top:1px solid var(--border);padding:10px 16px 12px;}
   .notes-lbl{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.08em;color:var(--text-tertiary);margin-bottom:6px;}
   .notes-pre{font-size:13px;color:var(--text-secondary);line-height:1.6;cursor:pointer;min-height:18px;}
   .notes-pre:empty::before{content:'Click to add a note...';color:var(--text-tertiary);font-style:italic;}
-  .notes-ta{width:100%;font-size:13px;color:var(--text-primary);border:1px solid var(--border-hover);border-radius:var(--radius-sm);padding:8px 10px;resize:none;min-height:72px;background:var(--surface);font-family:var(--font);line-height:1.6;outline:none;display:none;transition:border-color 0.15s;}
+  .notes-ta{width:100%;font-size:13px;border:1px solid var(--border-hover);border-radius:8px;padding:8px 10px;resize:none;min-height:72px;background:var(--surface);font-family:var(--font);line-height:1.6;outline:none;display:none;color:var(--text-primary);}
   .notes-ta:focus{border-color:#6366F1;}
-  .save-note{font-size:12px;font-weight:500;margin-top:6px;padding:5px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--bg);color:var(--text-secondary);cursor:pointer;display:none;font-family:var(--font);}
-  .save-note:hover{background:var(--surface);border-color:var(--border-hover);}
-
-  /* MODAL */
-  .modal-wrap{display:none;position:fixed;inset:0;background:rgba(15,17,23,0.4);z-index:200;align-items:center;justify-content:center;}
-  .modal-wrap.open{display:flex;}
-  .modal{background:var(--surface);border-radius:var(--radius-lg);padding:28px;width:420px;max-width:90vw;border:1px solid var(--border);}
-  .modal h3{font-size:17px;font-weight:600;margin-bottom:8px;}
-  .modal p{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:16px;}
-  .modal input{width:100%;font-size:13px;padding:9px 12px;border:1px solid var(--border);border-radius:var(--radius-sm);margin-bottom:10px;font-family:var(--font);outline:none;color:var(--text-primary);background:var(--bg);}
-  .modal input:focus{border-color:#6366F1;}
-  .modal input::placeholder{color:var(--text-tertiary);}
-  .modal-btns{display:flex;gap:8px;justify-content:flex-end;margin-top:4px;}
-  .btn-cancel{font-size:13px;padding:8px 16px;border:1px solid var(--border);border-radius:var(--radius-sm);background:transparent;cursor:pointer;font-family:var(--font);color:var(--text-secondary);}
-  .btn-save{font-size:13px;padding:8px 18px;border:none;border-radius:var(--radius-sm);background:#6366F1;color:#fff;cursor:pointer;font-weight:500;font-family:var(--font);}
-  .btn-save:hover{background:#4F46E5;}
-
-  @media(max-width:700px){
-    .main{padding:16px;}
-    .stats{grid-template-columns:repeat(2,1fr);}
-    .nav{padding:0 16px;}
-  }
+  .save-note{font-size:12px;font-weight:500;margin-top:6px;padding:5px 14px;border:1px solid var(--border);border-radius:8px;background:var(--bg);color:var(--text-secondary);cursor:pointer;display:none;font-family:var(--font);}
+  .loading-state{text-align:center;padding:60px 20px;color:var(--text-tertiary);font-size:14px;}
+  @media(max-width:700px){.main{padding:16px;}.stats{grid-template-columns:repeat(2,1fr);}.nav{padding:0 16px;}}
 </style>
 </head>
 <body>
-
 <nav class="nav">
-  <div class="nav-logo">
-    <div class="nav-logo-dot"></div>
-    Pipeline
-  </div>
+  <div class="nav-logo"><div class="nav-dot"></div>Pipeline — Scene</div>
   <div class="nav-right">
-    <span class="api-badge" id="api-badge">Demo data</span>
-    <button class="connect-btn" onclick="document.getElementById('modal').classList.add('open')">Connect Loxo</button>
+    <span class="status-pill loading" id="status-pill">Connecting...</span>
+    <button class="refresh-btn" onclick="loadCandidates()">
+      <svg width="13" height="13" viewBox="0 0 13 13" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.5 6.5a5 5 0 1 1-1.5-3.5"/><polyline points="11.5,1 11.5,4 8.5,4"/></svg>
+      Refresh
+    </button>
   </div>
 </nav>
 
 <div class="main">
-  <div class="page-header">
-    <div class="page-title">Candidate pipeline</div>
-    <div class="page-sub" id="page-sub">Showing demo data — connect Loxo to see your real candidates</div>
-  </div>
-
+  <div class="page-title">Candidate pipeline</div>
+  <div class="page-sub" id="page-sub">Loading your candidates from Loxo...</div>
   <div class="banner" id="banner">
     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><line x1="8" y1="5" x2="8" y2="8.5"/><circle cx="8" cy="11" r="0.75" fill="currentColor" stroke="none"/></svg>
     <span id="banner-text"></span>
   </div>
-
   <div class="stats" id="stats"></div>
-  <div class="board" id="board"></div>
-</div>
-
-<!-- Connect Loxo Modal -->
-<div class="modal-wrap" id="modal">
-  <div class="modal">
-    <h3>Connect your Loxo account</h3>
-    <p>Enter your Loxo API key and agency slug. You can find these in your Loxo account under Settings > API Keys. Only admins can generate keys.</p>
-    <input type="password" id="api-key-input" placeholder="API key (Bearer token)"/>
-    <input type="text" id="slug-input" placeholder="Agency slug (e.g. myagency)"/>
-    <input type="text" id="domain-input" placeholder="Domain (e.g. myagency.app.loxo.co)"/>
-    <div class="modal-btns">
-      <button class="btn-cancel" onclick="document.getElementById('modal').classList.remove('open')">Cancel</button>
-      <button class="btn-save" onclick="saveLoxo()">Save & connect</button>
-    </div>
-  </div>
+  <div id="board-wrap"><div class="loading-state">Fetching your candidates from Loxo...</div></div>
 </div>
 
 <script>
-const NOW=Date.now(), H=3600000;
+const DOMAIN='pod6.app.loxo.co';
+const SLUG='scene';
+const API_KEY='81f8be364a9a6f67c722a45db87fcb268418abdd6bdc8d0394b8ed7ed0435c8cf978083c0fc00a4158417a791c1ffbc7aa436e420de9bcf97b50609dd1ae56334400bfd0d39b0c9b19a33be97abcd88e4b2cb14e46ddb77710578c3e20208521a8813bbb23645f05e1d40c95051af9e5899c55af4cbc8aeb7850649d573d5bdd';
+const NOW=Date.now(),H=3600000;
 
-const stages=[
-  {id:'cv',    label:'CV sent',        color:'#94A3B8'},
-  {id:'first', label:'1st interview',  color:'#818CF8'},
-  {id:'second',label:'2nd interview',  color:'#F59E0B'},
-  {id:'third', label:'3rd interview',  color:'#F97316'},
-  {id:'final', label:'Final',          color:'#22C55E'},
+const STAGES=[
+  {id:'cv',label:'CV sent',color:'#94A3B8'},
+  {id:'first',label:'1st interview',color:'#818CF8'},
+  {id:'second',label:'2nd interview',color:'#F59E0B'},
+  {id:'third',label:'3rd interview',color:'#F97316'},
+  {id:'final',label:'Final',color:'#22C55E'},
+  {id:'other',label:'Other',color:'#94A3B8'},
 ];
 
-const demoCandidates=[
-  {id:1,name:'Sarah Mitchell',role:'Marketing Director',company:'Vitesse',   stage:'cv',    cvDate:'14 Apr 2026',interviewTs:null},
-  {id:2,name:'James Okafor',  role:'Product Designer',  company:'Borderless',stage:'cv',    cvDate:'16 Apr 2026',interviewTs:null},
-  {id:3,name:'Priya Sharma',  role:'Senior Developer',  company:'Vitesse',   stage:'first', cvDate:'10 Apr 2026',interviewTs:NOW+18*H},
-  {id:4,name:'Tom Elliot',    role:'SDR Manager',       company:'Borderless',stage:'first', cvDate:'11 Apr 2026',interviewTs:NOW+50*H},
-  {id:5,name:'Amara Diallo',  role:'Finance Analyst',   company:'Acme Corp', stage:'second',cvDate:'8 Apr 2026', interviewTs:NOW+6*H},
-  {id:6,name:'Leon Bauer',    role:'Operations Manager',company:'Vitesse',   stage:'second',cvDate:'7 Apr 2026', interviewTs:NOW+72*H},
-  {id:7,name:'Chloe Park',    role:'Brand Strategist',  company:'Borderless',stage:'third', cvDate:'5 Apr 2026', interviewTs:NOW+96*H},
-  {id:8,name:'Raj Patel',     role:'Head of Growth',    company:'Acme Corp', stage:'final', cvDate:'2 Apr 2026', interviewTs:NOW+52*H},
-];
-
-const avColors=[
+const AV=[
   {bg:'#EDE9FE',fg:'#5B21B6'},{bg:'#FCE7F3',fg:'#9D174D'},
   {bg:'#DCFCE7',fg:'#166534'},{bg:'#FEF3C7',fg:'#92400E'},
   {bg:'#DBEAFE',fg:'#1E40AF'},{bg:'#FFE4E6',fg:'#9F1239'},
   {bg:'#F0FDF4',fg:'#14532D'},{bg:'#FFF7ED',fg:'#7C2D12'},
 ];
 
-let candidates=[...demoCandidates];
 const state={};
-function initState(list){list.forEach((c,i)=>{if(!state[c.id])state[c.id]={prepped:false,confirmed:false,note:'',avColor:avColors[i%avColors.length]};});}
-initState(candidates);
+let candidates=[];
 
-function ini(n){return n.split(' ').map(x=>x[0]).join('');}
+function ini(n){return(n||'?').split(' ').map(x=>x[0]).join('').toUpperCase();}
 function fmtTs(ts){
-  const d=new Date(ts),hrs=(ts-NOW)/H;
-  const t=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+  const d=new Date(ts),hrs=(ts-NOW)/H,t=d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
   if(hrs<2)return 'Very soon';
   if(hrs<24)return t+' today';
   return d.toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})+' · '+t;
 }
 function u24(ts){return ts&&(ts-NOW)>0&&(ts-NOW)<24*H;}
+function fmtDate(s){try{return new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch(e){return s||'';}}
 
-function checkIcon(done){
-  return done
-    ?`<svg viewBox="0 0 10 10" fill="none" stroke="#166534" stroke-width="2.2"><polyline points="2,5 4,7 8,3"/></svg>`
-    :`<svg viewBox="0 0 10 10" fill="none" stroke="#991B1B" stroke-width="1.8"><line x1="3" y1="3" x2="7" y2="7"/><line x1="7" y1="3" x2="3" y2="7"/></svg>`;
+function mapStage(c){
+  const raw=(c.stage_name||c.status||'').toLowerCase().trim();
+  const map={'cv sent':'cv','cv':'cv','1st interview':'first','first interview':'first','2nd interview':'second','second interview':'second','3rd interview':'third','third interview':'third','final':'final','offer':'final'};
+  const id=map[raw]||'other';
+  return STAGES.find(s=>s.id===id)||{id:'other',label:c.stage_name||c.status||'Other',color:'#94A3B8'};
 }
 
-function calIcon(){
-  return `<svg viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="0.7" y="1.5" width="9.6" height="8.5" rx="1.5"/><line x1="3.5" y1="0.5" x2="3.5" y2="2.5"/><line x1="7.5" y1="0.5" x2="7.5" y2="2.5"/><line x1="0.7" y1="4.5" x2="10.3" y2="4.5"/></svg>`;
+function setStatus(type,text){const p=document.getElementById('status-pill');p.className='status-pill '+type;p.textContent=text;}
+
+async function loadCandidates(){
+  setStatus('loading','Connecting to Loxo...');
+  document.getElementById('page-sub').textContent='Loading your candidates...';
+  document.getElementById('board-wrap').innerHTML='<div class="loading-state">Fetching candidates from Loxo...</div>';
+  try{
+    const res=await fetch(`/api/loxo?endpoint=candidates`,{
+      headers:{'Accept':'application/json'}
+    });
+    if(!res.ok)throw new Error(res.status);
+    const data=await res.json();
+    const raw=data.candidates||data.data||data||[];
+    candidates=raw.map((c,i)=>({
+      id:c.id||i,
+      name:(c.person_name||c.name||'Unknown').trim(),
+      role:c.job_title||c.title||c.position||'',
+      company:c.company_name||c.company||'',
+      stage:mapStage(c),
+      photo:c.avatar_url||c.photo_url||null,
+      interviewTs:c.interview_date?new Date(c.interview_date).getTime():null,
+      cvDate:c.created_at?fmtDate(c.created_at):null,
+      av:AV[i%AV.length],
+    }));
+    candidates.forEach(c=>{if(!state[c.id])state[c.id]={prepped:false,confirmed:false,note:''};});
+    setStatus('connected',`Connected · ${candidates.length} candidates`);
+    document.getElementById('page-sub').textContent=`${candidates.length} candidates from Loxo · Updated ${new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})}`;
+    render();
+  }catch(err){
+    console.error('Loxo API error:',err);
+    setStatus('error','Using demo data');
+    document.getElementById('page-sub').textContent='Could not reach Loxo API — showing demo data. Try refreshing.';
+    loadDemo();
+  }
 }
+
+function loadDemo(){
+  candidates=[
+    {id:1,name:'Sarah Mitchell',role:'Marketing Director',company:'Vitesse',stage:STAGES[0],photo:null,interviewTs:null,cvDate:'14 Apr 2026',av:AV[0]},
+    {id:2,name:'James Okafor',role:'Product Designer',company:'Borderless',stage:STAGES[0],photo:null,interviewTs:null,cvDate:'16 Apr 2026',av:AV[1]},
+    {id:3,name:'Priya Sharma',role:'Senior Developer',company:'Vitesse',stage:STAGES[1],photo:null,interviewTs:NOW+18*H,cvDate:'10 Apr 2026',av:AV[2]},
+    {id:4,name:'Tom Elliot',role:'SDR Manager',company:'Borderless',stage:STAGES[1],photo:null,interviewTs:NOW+50*H,cvDate:'11 Apr 2026',av:AV[3]},
+    {id:5,name:'Amara Diallo',role:'Finance Analyst',company:'Acme Corp',stage:STAGES[2],photo:null,interviewTs:NOW+6*H,cvDate:'8 Apr 2026',av:AV[4]},
+    {id:6,name:'Leon Bauer',role:'Operations Manager',company:'Vitesse',stage:STAGES[2],photo:null,interviewTs:NOW+72*H,cvDate:'7 Apr 2026',av:AV[5]},
+    {id:7,name:'Chloe Park',role:'Brand Strategist',company:'Borderless',stage:STAGES[3],photo:null,interviewTs:NOW+96*H,cvDate:'5 Apr 2026',av:AV[6]},
+    {id:8,name:'Raj Patel',role:'Head of Growth',company:'Acme Corp',stage:STAGES[4],photo:null,interviewTs:NOW+52*H,cvDate:'2 Apr 2026',av:AV[7]},
+  ];
+  candidates.forEach(c=>{if(!state[c.id])state[c.id]={prepped:false,confirmed:false,note:''};});
+  render();
+}
+
+function xIcon(done){return done?`<svg viewBox="0 0 10 10" fill="none" stroke="#166534" stroke-width="2.2"><polyline points="2,5 4,7 8,3"/></svg>`:`<svg viewBox="0 0 10 10" fill="none" stroke="#991B1B" stroke-width="1.8"><line x1="3" y1="3" x2="7" y2="7"/><line x1="7" y1="3" x2="3" y2="7"/></svg>`;}
+function calSvg(){return `<svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="0.7" y="1.5" width="9.6" height="8.5" rx="1.5"/><line x1="3.5" y1="0.5" x2="3.5" y2="2.5"/><line x1="7.5" y1="0.5" x2="7.5" y2="2.5"/><line x1="0.7" y1="4.5" x2="10.3" y2="4.5"/></svg>`;}
 
 function renderStats(){
-  const total=candidates.length;
-  const prepped=candidates.filter(c=>state[c.id]&&state[c.id].prepped).length;
-  const interviews=candidates.filter(c=>c.interviewTs).length;
-  const confirmed=candidates.filter(c=>c.interviewTs&&state[c.id]&&state[c.id].confirmed).length;
-  const urgent=candidates.filter(c=>c.interviewTs&&u24(c.interviewTs)&&state[c.id]&&!state[c.id].confirmed).length;
+  const t=candidates.length,p=candidates.filter(c=>state[c.id]?.prepped).length;
+  const iv=candidates.filter(c=>c.interviewTs).length,cf=candidates.filter(c=>c.interviewTs&&state[c.id]?.confirmed).length;
+  const u=candidates.filter(c=>c.interviewTs&&u24(c.interviewTs)&&!state[c.id]?.confirmed).length;
   document.getElementById('stats').innerHTML=`
-    <div class="stat"><div class="stat-val">${total}</div><div class="stat-label">Total candidates</div></div>
-    <div class="stat"><div class="stat-val">${prepped}/${total}</div><div class="stat-label">Prepped</div></div>
-    <div class="stat"><div class="stat-val">${confirmed}/${interviews}</div><div class="stat-label">Interviews confirmed</div></div>
-    <div class="stat urgent"><div class="stat-val">${urgent}</div><div class="stat-label">Under 24hrs unconfirmed</div></div>`;
+    <div class="stat"><div class="stat-val">${t}</div><div class="stat-label">Total candidates</div></div>
+    <div class="stat"><div class="stat-val">${p}/${t}</div><div class="stat-label">Prepped</div></div>
+    <div class="stat"><div class="stat-val">${cf}/${iv}</div><div class="stat-label">Interviews confirmed</div></div>
+    <div class="stat urgent"><div class="stat-val">${u}</div><div class="stat-label">Under 24hrs unconfirmed</div></div>`;
 }
 
 function renderBanner(){
-  const urgent=candidates.filter(c=>c.interviewTs&&u24(c.interviewTs)&&state[c.id]&&!state[c.id].confirmed);
+  const u=candidates.filter(c=>c.interviewTs&&u24(c.interviewTs)&&!state[c.id]?.confirmed);
   const b=document.getElementById('banner');
-  if(urgent.length){
-    b.style.display='flex';
-    document.getElementById('banner-text').textContent=urgent.length===1
-      ?urgent[0].name+' has an interview in under 24hrs and is not yet confirmed!'
-      :urgent.length+' candidates have interviews under 24hrs — not yet confirmed!';
-  } else b.style.display='none';
+  if(u.length){b.style.display='flex';document.getElementById('banner-text').textContent=u.length===1?u[0].name+' has an interview in under 24hrs and is not yet confirmed!':u.length+' candidates have interviews under 24hrs — not yet confirmed!';}
+  else b.style.display='none';
 }
 
 function render(){
-  renderStats();
-  renderBanner();
-  const board=document.getElementById('board');
-  board.innerHTML='';
-
-  stages.forEach(stage=>{
-    const sc=candidates.filter(c=>c.stage===stage.id);
-    const col=document.createElement('div');
-    col.className='col';
-    col.innerHTML=`<div class="col-header">
-      <div class="col-label-wrap">
-        <div class="col-pip" style="background:${stage.color}"></div>
-        <span class="col-label">${stage.label}</span>
-      </div>
-      <span class="col-count">${sc.length}</span>
-    </div>`;
-
+  renderStats();renderBanner();
+  const wrap=document.getElementById('board-wrap');wrap.innerHTML='';
+  const board=document.createElement('div');board.className='board';
+  const visible=STAGES.filter(st=>candidates.some(c=>c.stage.id===st.id));
+  visible.forEach(stage=>{
+    const sc=candidates.filter(c=>c.stage.id===stage.id);
+    const col=document.createElement('div');col.className='col';
+    col.innerHTML=`<div class="col-header"><div style="display:flex;align-items:center;gap:7px"><div class="col-pip" style="background:${stage.color}"></div><span class="col-label">${stage.label}</span></div><span class="col-count">${sc.length}</span></div>`;
     sc.forEach(c=>{
-      const s=state[c.id]||(state[c.id]={prepped:false,confirmed:false,note:'',avColor:avColors[0]});
-      const hasInt=!!c.interviewTs;
-      const isU24=u24(c.interviewTs);
-      const stObj=stages.find(st=>st.id===c.stage);
-      const av=s.avColor;
-
-      const card=document.createElement('div');
-      card.className='card';
-
-      const accent=document.createElement('div');
-      accent.className='card-accent';
-      accent.style.background=stObj.color;
-      card.appendChild(accent);
-
-      const body=document.createElement('div');
-      body.className='card-body';
-
-      const avRow=document.createElement('div');
-      avRow.className='av-row';
-      avRow.innerHTML=`<div class="av" style="background:${av.bg};color:${av.fg}">${ini(c.name)}</div>
-        <div style="min-width:0">
-          <div class="cname">${c.name}</div>
-          <div class="crole">${c.role} <em>at</em> <strong>${c.company}</strong></div>
-        </div>`;
-      body.appendChild(avRow);
-
-      const chips=document.createElement('div');
-      chips.className='chips';
-      if(hasInt){
-        chips.innerHTML=`<span class="chip chip-int">${calIcon()} ${fmtTs(c.interviewTs)}</span>`;
-        if(isU24&&!s.confirmed) chips.innerHTML+=`<span class="chip chip-urgent">Under 24hrs</span>`;
-      } else {
-        chips.innerHTML=`<span class="chip chip-cv">CV sent ${c.cvDate}</span>`;
-      }
-      body.appendChild(chips);
+      const s=state[c.id]||(state[c.id]={prepped:false,confirmed:false,note:''});
+      const hasInt=!!c.interviewTs,isU=u24(c.interviewTs);
+      const card=document.createElement('div');card.className='card';
+      const acc=document.createElement('div');acc.className='card-accent';acc.style.background=c.stage.color;card.appendChild(acc);
+      const body=document.createElement('div');body.className='card-body';
+      const avHtml=c.photo?`<div class="av"><img src="${c.photo}" alt="${c.name}" onerror="this.parentNode.textContent='${ini(c.name)}'"/></div>`:`<div class="av" style="background:${c.av.bg};color:${c.av.fg}">${ini(c.name)}</div>`;
+      body.innerHTML=`<div class="av-row">${avHtml}<div style="min-width:0"><div class="cname">${c.name}</div><div class="crole">${c.role||'—'}</div>${c.company?`<div><span class="co-badge"><span class="co-dot"></span>${c.company}</span></div>`:''}</div></div><div class="chips">${hasInt?`<span class="chip chip-int">${calSvg()} ${fmtTs(c.interviewTs)}</span>${isU&&!s.confirmed?'<span class="chip chip-urgent">Under 24hrs</span>':''}`:`<span class="chip chip-cv">CV sent ${c.cvDate||'—'}</span>`}</div>`;
       card.appendChild(body);
-
-      const checks=document.createElement('div');
-      checks.className='checks';
-
-      const b1=document.createElement('div');
-      b1.className='chk-block '+(s.prepped?'grn':'red');
-      b1.innerHTML=`<div class="chk-icon ${s.prepped?'grn':'red'}">${checkIcon(s.prepped)}</div>
-        <div class="chk-content">
-          <div class="chk-title ${s.prepped?'grn':'red'}">${s.prepped?'Prep complete':'Prep needed'}</div>
-          <div class="chk-desc${s.prepped?' thru':''}">Prepped & prep email sent</div>
-        </div>`;
-      const cb1=document.createElement('input');
-      cb1.type='checkbox';cb1.className='chk-cb'+(s.prepped?'':' red');cb1.checked=s.prepped;
-      cb1.addEventListener('change',()=>{state[c.id].prepped=cb1.checked;render();});
-      b1.appendChild(cb1);
-      checks.appendChild(b1);
-
-      if(hasInt){
-        const b2=document.createElement('div');
-        b2.className='chk-block '+(s.confirmed?'grn':'red');
-        b2.innerHTML=`<div class="chk-icon ${s.confirmed?'grn':'red'}">${checkIcon(s.confirmed)}</div>
-          <div class="chk-content">
-            <div class="chk-title ${s.confirmed?'grn':'red'}">${s.confirmed?'All confirmed':'Not confirmed'}</div>
-            <div class="chk-desc${s.confirmed?' thru':''}">Confirmed, locked in & good luck sent</div>
-          </div>`;
-        const cb2=document.createElement('input');
-        cb2.type='checkbox';cb2.className='chk-cb'+(s.confirmed?'':' red');cb2.checked=s.confirmed;
-        cb2.addEventListener('change',()=>{state[c.id].confirmed=cb2.checked;render();});
-        b2.appendChild(cb2);
-        checks.appendChild(b2);
-        if(!s.confirmed&&isU24){
-          const h=document.createElement('div');
-          h.className='hint';
-          h.textContent='Interview under 24hrs — confirm now!';
-          checks.appendChild(h);
-        }
-      }
+      const checks=document.createElement('div');checks.className='checks';
+      [{key:'prepped',done:s.prepped,title:[['Prep needed','Prep complete']],desc:'Prepped & prep email sent'},
+       ...(hasInt?[{key:'confirmed',done:s.confirmed,title:[['Not confirmed','All confirmed']],desc:'Confirmed, locked in & good luck sent'}]:[])
+      ].forEach(item=>{
+        const b=document.createElement('div');b.className='chk-block '+(item.done?'grn':'red');
+        b.innerHTML=`<div class="chk-icon ${item.done?'grn':'red'}">${xIcon(item.done)}</div><div class="chk-content"><div class="chk-title ${item.done?'grn':'red'}">${item.done?item.title[0][1]:item.title[0][0]}</div><div class="chk-desc${item.done?' thru':''}">${item.desc}</div></div>`;
+        const cb=document.createElement('input');cb.type='checkbox';cb.className='chk-cb'+(item.done?'':' red');cb.checked=item.done;
+        cb.addEventListener('change',()=>{state[c.id][item.key]=cb.checked;render();});
+        b.appendChild(cb);checks.appendChild(b);
+        if(item.key==='confirmed'&&!item.done&&isU){const h=document.createElement('div');h.className='hint';h.textContent='Interview under 24hrs — confirm now!';checks.appendChild(h);}
+      });
       card.appendChild(checks);
-
-      const na=document.createElement('div');
-      na.className='notes-area';
+      const na=document.createElement('div');na.className='notes-area';
       const nl=document.createElement('div');nl.className='notes-lbl';nl.textContent='Notes';
       const pre=document.createElement('div');pre.className='notes-pre';pre.textContent=s.note||'';
       const ta=document.createElement('textarea');ta.className='notes-ta';ta.value=s.note||'';ta.placeholder='Type a note...';
       const sb=document.createElement('button');sb.className='save-note';sb.textContent='Save note';
       pre.addEventListener('click',()=>{pre.style.display='none';ta.style.display='block';sb.style.display='inline-block';ta.focus();});
       sb.addEventListener('click',()=>{state[c.id].note=ta.value;pre.textContent=ta.value;ta.style.display='none';sb.style.display='none';pre.style.display='block';});
-      na.appendChild(nl);na.appendChild(pre);na.appendChild(ta);na.appendChild(sb);
-      card.appendChild(na);
-
+      na.appendChild(nl);na.appendChild(pre);na.appendChild(ta);na.appendChild(sb);card.appendChild(na);
       col.appendChild(card);
     });
     board.appendChild(col);
   });
+  wrap.appendChild(board);
+  if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
+  candidates.filter(c=>c.interviewTs).forEach(c=>{
+    const ms=c.interviewTs-NOW-24*H;
+    if(ms>0)setTimeout(()=>{if(!state[c.id]?.confirmed&&Notification.permission==='granted')new Notification('Reminder: '+c.name,{body:c.name+' interviews for '+c.role+' at '+c.company+' in 24hrs!'});},ms);
+  });
 }
 
-function saveLoxo(){
-  const key=document.getElementById('api-key-input').value.trim();
-  const slug=document.getElementById('slug-input').value.trim();
-  const domain=document.getElementById('domain-input').value.trim();
-  if(!key||!slug||!domain){alert('Please fill in all three fields.');return;}
-  localStorage.setItem('loxo_key',key);
-  localStorage.setItem('loxo_slug',slug);
-  localStorage.setItem('loxo_domain',domain);
-  document.getElementById('modal').classList.remove('open');
-  document.getElementById('api-badge').textContent='Loxo connected';
-  document.getElementById('api-badge').style.background='#F0FDF4';
-  document.getElementById('api-badge').style.color='#166534';
-  document.getElementById('api-badge').style.borderColor='#BBF7D0';
-  document.getElementById('page-sub').textContent='Connected to Loxo — real candidate data will appear when API is wired up';
-  alert('Credentials saved! Once the backend is set up, your real Loxo candidates will appear here automatically.');
-}
-
-if('Notification'in window&&Notification.permission==='default')Notification.requestPermission();
-candidates.filter(c=>c.interviewTs).forEach(c=>{
-  const ms=c.interviewTs-NOW-24*H;
-  if(ms>0)setTimeout(()=>{
-    if(state[c.id]&&!state[c.id].confirmed&&Notification.permission==='granted'){
-      new Notification('Reminder: '+c.name,{body:c.name+' interviews for '+c.role+' at '+c.company+' in 24hrs — not confirmed!'});
-    }
-  },ms);
-});
-
-render();
+loadCandidates();
 </script>
 </body>
 </html>
