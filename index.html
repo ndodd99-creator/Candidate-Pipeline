@@ -164,14 +164,14 @@ async function loadCandidates(){
     });
     if(!res.ok)throw new Error(res.status);
     const data=await res.json();
-    const raw=data.people||data.candidates||data.data||data||[];
+    const raw=data.candidates||data.people||data.data||data||[];
     candidates=raw.map((c,i)=>({
-      id:c.id||i,
+      id:c.id||c.person_id||i,
       name:(c.person_name||c.name||'Unknown').trim(),
-      role:c.job_title||c.title||c.position||'',
+      role:c.job_title||c.title||c.position||c.job_name||'',
       company:c.company_name||c.company||'',
       stage:mapStage(c),
-      photo:c.avatar_url||c.photo_url||null,
+      photo:c.avatar_url||c.photo_url||c.person_avatar||null,
       interviewTs:c.interview_date?new Date(c.interview_date).getTime():null,
       cvDate:c.created_at?fmtDate(c.created_at):null,
       av:AV[i%AV.length],
