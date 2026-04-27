@@ -8,13 +8,13 @@ export default async function handler(req, res) {
   }
 
   const DOMAIN = 'pod6.app.loxo.co';
-  const API_KEY = '81f8be364a9a6f67c722a45db87fcb268418abdd6bdc8d0394b8ed7ed0435c8cf978083c0fc00a4158417a791c1ffbc7aa436e420de9bcf97b50609dd1ae56334400bfd0d39b0c9b19a33be97abcd88e4b2cb14e46ddb77710578c3e20208521a8813bbb23645f05e1d40c95051af9e5899c55af4cbc8aeb7850649d573d5bdd';
+  const SLUG = 'scene-1';
+  const API_KEY = 'd8b8828b6120c2f3f3f9503b85a83db28ae62c16910710885463290fe0ce5386ccaacf9cd19bd9746459730ae7def151a6ec93cf23c458034dd86a7612539aec617bd0aca733869fad21c0336e07693d793db21352a90be0b37f990d816cdb24b865b9c3312ac63d5774ff9617f5b48e034bbedb5819c88c6a40523eee13d407';
 
   const endpoint = req.query.endpoint || 'people';
-  const slug = req.query.slug || '42068';
 
   try {
-    const url = `https://${DOMAIN}/api/${slug}/${endpoint}`;
+    const url = `https://${DOMAIN}/api/${SLUG}/${endpoint}`;
     console.log('Fetching:', url);
     
     const response = await fetch(url, {
