@@ -12,25 +12,32 @@ export default async function handler(req, res) {
   const API_KEY = 'd8b8828b6120c2f3f3f9503b85a83db28ae62c16910710885463290fe0ce5386ccaacf9cd19bd9746459730ae7def151a6ec93cf23c458034dd86a7612539aec617bd0aca733869fad21c0336e07693d793db21352a90be0b37f990d816cdb24b865b9c3312ac63d5774ff9617f5b48e034bbedb5819c88c6a40523eee13d407';
   const USER_ID = '1895007';
 
+  const stages = ['CV Sent', '1st Interview', '2nd Interview', '3rd Interview', 'Final Interview', 'Offer'];
+
   try {
-    const url = `https://${DOMAIN}/api/${SLUG}/people?job_person_owners=${USER_ID}&per_page=100`;
-    console.log('Fetching:', url);
+    const allPeople = [];
 
-    const response = await fetch(url, {
-      headers: {
-        'Authorization': `Bearer ${API_KEY}`,
-        'Accept': 'application/json',
+    for (const stage of stages) {
+      const query = `owned_by_id:${USER_ID} AND workflow_stage:"${stage}"`;
+      const url = `https://${DOMAIN}/api/${SLUG}/people?query=${encodeURIComponent(query)}&per_page=100`;
+      
+      const response = await fetch(url, {
+        headers: {
+          'Authorization': `Bearer ${API_KEY}`,
+          'Accept': 'application/json',
+        }
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        const people = data.people || data.data || [];
+        people.forEach(p => {
+          allPeople.push({ ...p, workflow_stage: stage });
+        });
       }
-    });
-
-    const text = await response.text();
-    console.log('Status:', response.status);
-
-    if (!response.ok) {
-      return res.status(response.status).json({ error: `${response.status}`, url, body: text });
     }
 
-    return res.status(200).json(JSON.parse(text));
+    return res.status(200).json({ people: allPeople, total: allPeople.length });
 
   } catch (err) {
     return res.status(500).json({ error: err.message });
