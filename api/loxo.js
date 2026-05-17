@@ -43,7 +43,7 @@ export default async function handler(req, res) {
     // Filter to only Nathanial's candidates with an active pipeline stage
     const STAGE_IDS = ['4115','4117','4118','4119','5512','5514','5515'];
     const myCandidates = allPeople.filter(p =>
-      p.owned_by_id === USER_ID &&
+      (String(p.owned_by_id) === String(USER_ID) || String(p.updated_by_id) === String(USER_ID) || String(p.created_by_id) === String(USER_ID)) &&
       p.workflow_stage_id &&
       STAGE_IDS.includes(String(p.workflow_stage_id))
     );
