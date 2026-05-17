@@ -117,12 +117,14 @@ const API_KEY='81f8be364a9a6f67c722a45db87fcb268418abdd6bdc8d0394b8ed7ed0435c8cf
 const NOW=Date.now(),H=3600000;
 
 const STAGES=[
-  {id:'cv',label:'CV sent',color:'#94A3B8'},
-  {id:'first',label:'1st interview',color:'#818CF8'},
-  {id:'second',label:'2nd interview',color:'#F59E0B'},
-  {id:'third',label:'3rd interview',color:'#F97316'},
-  {id:'final',label:'Final',color:'#22C55E'},
-  {id:'other',label:'Other',color:'#94A3B8'},
+  {id:'shortlist',label:'Shortlist',color:'#A78BFA'},
+  {id:'cv',label:'CV Sent',color:'#94A3B8'},
+  {id:'first',label:'1st Interview',color:'#818CF8'},
+  {id:'second',label:'2nd Interview',color:'#F59E0B'},
+  {id:'third',label:'3rd Interview',color:'#F97316'},
+  {id:'final',label:'Final Interview',color:'#22C55E'},
+  {id:'offer',label:'Offer',color:'#10B981'},
+  {id:'other',label:'Other',color:'#64748B'},
 ];
 
 const AV=[
@@ -146,10 +148,19 @@ function u24(ts){return ts&&(ts-NOW)>0&&(ts-NOW)<24*H;}
 function fmtDate(s){try{return new Date(s).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}catch(e){return s||'';}}
 
 function mapStage(c){
-  const raw=(c.stage_name||c.status||'').toLowerCase().trim();
-  const map={'cv sent':'cv','cv':'cv','1st interview':'first','first interview':'first','2nd interview':'second','second interview':'second','3rd interview':'third','third interview':'third','final':'final','offer':'final'};
-  const id=map[raw]||'other';
-  return STAGES.find(s=>s.id===id)||{id:'other',label:c.stage_name||c.status||'Other',color:'#94A3B8'};
+  const stageMap={
+    '4115':{id:'shortlist',label:'Shortlist',color:'#A78BFA'},
+    '4117':{id:'cv',label:'CV Sent',color:'#94A3B8'},
+    '4118':{id:'first',label:'1st Interview',color:'#818CF8'},
+    '4119':{id:'second',label:'2nd Interview',color:'#F59E0B'},
+    '5512':{id:'third',label:'3rd Interview',color:'#F97316'},
+    '5514':{id:'final',label:'Final Interview',color:'#22C55E'},
+    '5515':{id:'offer',label:'Offer',color:'#10B981'},
+  };
+  if(c.workflow_stage_id && stageMap[String(c.workflow_stage_id)]) return stageMap[String(c.workflow_stage_id)];
+  const raw=(c.workflow_stage||c.stage_name||c.status||'').toLowerCase().trim();
+  const nameMap={'shortlist':{id:'shortlist',label:'Shortlist',color:'#A78BFA'},'cv sent':{id:'cv',label:'CV Sent',color:'#94A3B8'},'1st interview':{id:'first',label:'1st Interview',color:'#818CF8'},'2nd interview':{id:'second',label:'2nd Interview',color:'#F59E0B'},'3rd interview':{id:'third',label:'3rd Interview',color:'#F97316'},'final interview':{id:'final',label:'Final Interview',color:'#22C55E'},'offer':{id:'offer',label:'Offer',color:'#10B981'}};
+  return nameMap[raw]||{id:'other',label:c.workflow_stage||'Other',color:'#94A3B8'};
 }
 
 function setStatus(type,text){const p=document.getElementById('status-pill');p.className='status-pill '+type;p.textContent=text;}
@@ -164,14 +175,14 @@ async function loadCandidates(){
     });
     if(!res.ok)throw new Error(res.status);
     const data=await res.json();
-    const raw=data.candidates||data.people||data.data||data||[];
+    const raw=data.people||data.candidates||data.data||data||[];
     candidates=raw.map((c,i)=>({
       id:c.id||c.person_id||i,
-      name:(c.person_name||c.name||'Unknown').trim(),
-      role:c.job_title||c.title||c.position||c.job_name||'',
-      company:c.company_name||c.company||'',
+      name:(c.name||c.person_name||'Unknown').trim(),
+      role:c.current_title||c.job_title||c.title||c.position||'',
+      company:c.current_company||c.company_name||c.company||'',
       stage:mapStage(c),
-      photo:c.avatar_url||c.photo_url||c.person_avatar||null,
+      photo:c.profile_picture_thumb_url||c.avatar_url||c.photo_url||null,
       interviewTs:c.interview_date?new Date(c.interview_date).getTime():null,
       cvDate:c.created_at?fmtDate(c.created_at):null,
       av:AV[i%AV.length],
