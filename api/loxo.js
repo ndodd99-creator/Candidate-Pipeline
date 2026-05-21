@@ -9,6 +9,22 @@ export default async function handler(req, res) {
   const API_KEY = 'd8b8828b6120c2f3f3f9503b85a83db28ae62c16910710885463290fe0ce5386ccaacf9cd19bd9746459730ae7def151a6ec93cf23c458034dd86a7612539aec617bd0aca733869fad21c0336e07693d793db21352a90be0b37f990d816cdb24b865b9c3312ac63d5774ff9617f5b48e034bbedb5819c88c6a40523eee13d407';
   const USER_ID = '1895007';
 
+  // If ?debug=true, pass through any endpoint for exploration
+  if (req.query.debug) {
+    const endpoint = req.query.endpoint || 'people';
+    const url = `https://${DOMAIN}/api/${SLUG}/${endpoint}`;
+    try {
+      const r = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${API_KEY}`, 'Accept': 'application/json' }
+      });
+      const text = await r.text();
+      return res.status(r.status).send(text);
+    } catch(e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
+  // Main pipeline fetch
   const STAGES = [
     { id: '4115', name: 'Shortlist' },
     { id: '4117', name: 'CV Sent' },
@@ -21,31 +37,18 @@ export default async function handler(req, res) {
 
   try {
     const allPeople = [];
-
     for (const stage of STAGES) {
       const url = `https://${DOMAIN}/api/${SLUG}/people?query=owned_by_id:${USER_ID}&active_workflow_stage_id=${stage.id}&per_page=100`;
-      
-      const response = await fetch(url, {
-        headers: {
-          'Authorization': `Bearer ${API_KEY}`,
-          'Accept': 'application/json',
-        }
+      const r = await fetch(url, {
+        headers: { 'Authorization': `Bearer ${API_KEY}`, 'Accept': 'application/json' }
       });
-
-      if (response.ok) {
-        const data = await response.json();
+      if (r.ok) {
+        const data = await r.json();
         const people = data.people || data.data || [];
-        people.forEach(p => {
-          allPeople.push({ ...p, workflow_stage: stage.name, workflow_stage_id: stage.id });
-        });
-        console.log(`Stage ${stage.name}: ${people.length} people`);
-      } else {
-        console.log(`Stage ${stage.name} error: ${response.status}`);
+        people.forEach(p => allPeople.push({ ...p, workflow_stage: stage.name, workflow_stage_id: stage.id }));
       }
     }
-
     return res.status(200).json({ people: allPeople, total: allPeople.length });
-
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
